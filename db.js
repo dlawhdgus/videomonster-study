@@ -5,6 +5,7 @@ const port = 3000;
 const mysql = require('mysql')
 const ejs = require('ejs')
 const bodyParser = require('body-parser');
+const url = require('url')
 
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(express.static(__dirname + '/public'));
@@ -26,12 +27,19 @@ const con = mysql.createConnection({
 
 //회원가입 
 app.get('/',(req,res)=>{
-    res.render('index')
+    // res.render('index')
+    res.status(200).send('index')
 })
 
 app.post('/',(req,res)=>{
-    var id = req.body.id; //id 받아오기
-    var pw = req.body.pw; //pw 받아오기
+    const addr = url.parse(req.url, false)
+    console.log(addr)
+    const { id: id, pw: pw} = req.body
+    // var id = req.body.id; //id 받아오기
+    // var pw = req.body.pw; //pw 받아오기
+    if(!id || !pw){
+        res.status(400).send('no value')
+    }
     var delete_blank_id = id.replace(/(\s*)/g, ""); //공백 제거
     const check_id = `select count(*) as cnt from login where userid='${delete_blank_id}'`; //id 중복 확인
     con.query(check_id,function(err,result,fields){
@@ -55,7 +63,8 @@ app.post('/',(req,res)=>{
                 con.query(sql,[id,pw],function(err,result, fields){
                     if(err) throw err;
                     //console.log(result);
-                    res.redirect('/login');
+                    // res.redirect('/login');
+                    res.status(200).send('login')
                 }) 
             }
         }
@@ -64,12 +73,17 @@ app.post('/',(req,res)=>{
 
 //로그인
 app.get('/login',(req,res) =>{
-    res.render('login');
+    // res.render('login');
+    res.status(200).send('login')
 });
 
 app.post('/login',(req,res)=>{
-    var post_id = req.body.id;
-    var post_pw = req.body.pw;
+    const { id: post_id, pw: post_pw } = req.body  //구조 분해 할당
+
+    if (!post_id || !post_pw) {
+        res.status(400).send('Invalid Param')
+    }
+
     const check_id = `select * from login where userid = '${post_id}'`;
     if(post_id === ''){
         res.write("<script>alert('Id is blank');</script>");
@@ -108,7 +122,7 @@ app.post('/login',(req,res)=>{
                 else
                 {
                     console.log(result[0])
-                    res.redirect('/mypage');
+                    // res.redirect('/mypage');
                     // const mypage_sql = `SELECT * FROM login`
                     // con.query(mypage_sql, (err,result)=>{
                     //     con.query(`SELECT * FROM login WHERE userid = ${post_id}`,(err2,result2) => {
@@ -116,6 +130,7 @@ app.post('/login',(req,res)=>{
                     //     })
                         
                     // })
+                    res.status(200).send('mypage');
                     
                 }
             }
@@ -135,7 +150,8 @@ app.get('/info',(req,res) =>{
         if(err) throw err;
         con.query(`SELECT * FROM login WHERE num = 7`,function(err2,result){
             if(err2) throw err2
-            res.render('info',{login : result})
+            // res.render('info',{login : result})
+            res.status(200).send(result)
         })
         // res.render('info',{login : result})
     });
@@ -151,7 +167,8 @@ app.get('/mypage',(req,res) =>{
         const num = result[i].num;
         con.query(`SELECT * FROM login WHERE num = ${num}`,function(err2,result2){
             if(err2) throw err2;
-            res.render('mypage',{login : result2})
+            // res.render('mypage',{login : result2})
+            res.status(200).send(result2)
         })
         // res.render('mypage',{login : result})
     });
@@ -160,7 +177,8 @@ app.get('/mypage',(req,res) =>{
 
 //기능
 app.get('/create',(req, res)=>{
-    res.render('form');
+    // res.render('form');
+    res.status(200).send('form')
 })
 
 app.get('/edit/:num', (req, res) =>{
@@ -170,9 +188,11 @@ app.get('/edit/:num', (req, res) =>{
         var i = 1 //rowdatapacket num값
         const num = result[i].num;
         con.query(`SELECT * FROM login WHERE num = ${num}`,function(err2,result2){
-            res.render('edit',{login : result2})
+            // res.render('edit',{login : result2})
+            res.status(200).send({result2})
         })
-        res.render('edit',{login : result});
+        //res.render('edit',{login : result});
+        res.status(200).send({result})
 
     })
 })
@@ -180,7 +200,8 @@ app.post('/update/:userid',(req,res)=>{
     const sql = `UPDATE login SET ?`;
     con.query(sql,req.body,function(err,result,fields){
         if(err) throw err;
-        res.redirect('/info');
+        //res.redirect('/info');
+        res.status(200).send('info')
     })
     /*
     const update_id_sql = `Update login SET userid = '${return_value}' where userid='${basic_value}'`
@@ -203,7 +224,8 @@ app.get('/delete/:id', (req,res)=>{
     const sql = `DELETE FROM login WHERE userid = '${req.params.id}'`;
     con.query(sql,[req.params.id],function(err,result,fields){
         if(err) throw err;
-        res.redirect('/info');
+        // res.redirect('/info');
+        res.status(200).send('info')
     })
 })
 
