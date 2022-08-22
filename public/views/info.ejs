@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Info</title>
+    <link rel="stylesheet" type="text/css" href="../css/info.css" />
+</head>
+<body>
+    <table>
+        <tr>
+            <td>num</td>
+            <td>id</td>
+            <td>pw</td>
+            <td>edit</td>
+            <td>delete</td>
+            <td>date</td>
+        </tr>
+        <% login.forEach(function (value){ %>
+            <tr>
+                <td><%- value.num %></td>
+                <td><%- value.userid %></td>
+                <td><%- value.userpw %></td>
+                <td><a href="/edit/<%- value.userid %>">edit</a></td>
+                <td><a href="/delete/<%- value.userid %>">delete</a></td>
+                <td><%- value.reg_dt %></td>
+            </tr>
+        <% }); %>
+    </table>
+    <a href="/">Go to main</a>
+</body>
+</html>

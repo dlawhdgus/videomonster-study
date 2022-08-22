@@ -1,0 +1,17 @@
+form{
+    text-align: center;
+}
+h1{
+    padding-top: 150px;
+}
+input{
+    width: 200px;
+    height: 30px;
+}
+button{
+    width: 210px;
+    height: 30px;
+}
+button:hover{
+    background-color: orange;
+}
