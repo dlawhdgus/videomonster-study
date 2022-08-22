@@ -130,7 +130,8 @@ app.post('/login',(req,res)=>{
                     //     })
                         
                     // })
-                    res.status(200).send('mypage');
+                    res.status(200).send(result);
+                    
                     
                 }
             }
@@ -163,7 +164,7 @@ app.get('/mypage',(req,res) =>{
     con.query(sql, function(err, result,fields){
         if(err) {throw err}
         
-        var i = 2 //rowdatapacket num값
+        var i = 0 //rowdatapacket num값
         const num = result[i].num;
         con.query(`SELECT * FROM login WHERE num = ${num}`,function(err2,result2){
             if(err2) throw err2;
