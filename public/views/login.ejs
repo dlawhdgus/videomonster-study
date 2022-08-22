@@ -8,13 +8,15 @@
     <link rel="stylesheet" type="text/css" href="/css/form-login.css" />
 </head>
 <body>
-    <form action="/login" method="post">
-        <h1>Login</h1>
-        <p><input type="text" name="id" autofocus placeholder="ID"></p>
-        <p><input type="password" name="pw" placeholder="PASSWORD"></p>
-        <button type="submit">submit</button><br><br>
-        <a href="/">Go to main</a> | <a href="/create">Do you want join?</a>
-    </form>
-    </p>
+    <% login.forEach(function(value){ %>
+        <form action="/login/<%- value.id %>" method="post">
+            <h1>Login</h1>
+            <p><input type="text" name="id" autofocus placeholder="ID"></p>
+            <p><input type="password" name="pw" placeholder="PASSWORD"></p>
+            <button type="submit">submit</button><br><br>
+            <a href="/">Go to main</a> | <a href="/create">Do you want join?</a>
+        </form>
+    <% }); %>
+    
 </body>
 </html>

@@ -6,6 +6,8 @@ const mysql = require('mysql')
 const ejs = require('ejs')
 const bodyParser = require('body-parser');
 const url = require('url')
+const http = require('http')
+
 
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(express.static(__dirname + '/public'));
@@ -28,7 +30,8 @@ const con = mysql.createConnection({
 //회원가입 
 app.get('/',(req,res)=>{
     // res.render('index')
-    res.status(200).send('index')
+    var url = req.url
+    res.status(200).send(url)
 })
 
 app.post('/',(req,res)=>{
@@ -64,7 +67,7 @@ app.post('/',(req,res)=>{
                     if(err) throw err;
                     //console.log(result);
                     // res.redirect('/login');
-                    res.status(200).send('login')
+                    res.status(200).send('post login')
                 }) 
             }
         }
@@ -74,7 +77,7 @@ app.post('/',(req,res)=>{
 //로그인
 app.get('/login',(req,res) =>{
     // res.render('login');
-    res.status(200).send('login')
+    res.status(200).send(`id : ${req.query.id}`)
 });
 
 app.post('/login',(req,res)=>{
@@ -130,7 +133,7 @@ app.post('/login',(req,res)=>{
                     //     })
                         
                     // })
-                    res.status(200).send(result);
+                    res.status(200).send(result[0].num);
                     
                     
                 }
@@ -149,7 +152,8 @@ app.get('/info',(req,res) =>{
     const sql = "select * from login";
     con.query(sql, function(err, result,fields){
         if(err) throw err;
-        con.query(`SELECT * FROM login WHERE num = 7`,function(err2,result){
+        console.log(`${req.query.num}`)
+        con.query(`SELECT * FROM login where num = '${req.query.num}'`,function(err2,result){
             if(err2) throw err2
             // res.render('info',{login : result})
             res.status(200).send(result)
@@ -159,14 +163,22 @@ app.get('/info',(req,res) =>{
 });
 
 //마이페이지
+// app.get('/mypage', (req,res) => {
+//     console.log(`${req.query.userid}`)
+//     const sql = `select * form login`;
+//     con.query(sql,function(err,result){
+//         if(err) throw err;
+//         res.status(200).send('result')
+//         // console.log(`${req.params.userid}`)
+//         // if(`${req.params.userid}`)
+//     })
+// })
 app.get('/mypage',(req,res) =>{
     const sql = `select num from login`; //where num = 그 회원의 num값을 가져오기
     con.query(sql, function(err, result,fields){
         if(err) {throw err}
-        
-        var i = 0 //rowdatapacket num값
-        const num = result[i].num;
-        con.query(`SELECT * FROM login WHERE num = ${num}`,function(err2,result2){
+        console.log(`${req.query.num}`)
+        con.query(`SELECT * FROM login where num = '${req.query.num}'`,function(err2,result2){
             if(err2) throw err2;
             // res.render('mypage',{login : result2})
             res.status(200).send(result2)
@@ -197,13 +209,22 @@ app.get('/edit/:num', (req, res) =>{
 
     })
 })
-app.post('/update/:userid',(req,res)=>{
+app.post('/update',(req,res)=>{
     const sql = `UPDATE login SET ?`;
     con.query(sql,req.body,function(err,result,fields){
         if(err) throw err;
         //res.redirect('/info');
         res.status(200).send('info')
     })
+})
+app.post('/update',(req,res)=>{
+    const sql = `UPDATE login SET userid = ? where = ${req.query.userid}`;
+    con.query(sql,req.body,function(err,result,fields){
+        if(err) throw err;
+        //res.redirect('/info');
+        res.status(200).send('info')
+    })
+})
     /*
     const update_id_sql = `Update login SET userid = '${return_value}' where userid='${basic_value}'`
     const update_pw_sql = `Update login SET userpw = '${return_value}' where userpw='${basic_value}'`
@@ -220,8 +241,9 @@ app.post('/update/:userid',(req,res)=>{
         })
     }
     */
-})
-app.get('/delete/:id', (req,res)=>{
+
+app.delete('/delete/:id', (req,res)=>{
+    const { num } = req.params
     const sql = `DELETE FROM login WHERE userid = '${req.params.id}'`;
     con.query(sql,[req.params.id],function(err,result,fields){
         if(err) throw err;
@@ -233,3 +255,8 @@ app.get('/delete/:id', (req,res)=>{
 app.listen(port,()=>{
     console.log('server start');
 })
+
+// GET -> 서버에 있는 리소스를 조회
+// POST -> 데이터 생성
+// PATCH -> 업데이트, 데이터를 수정할 때
+// DELETE -> 삭제
