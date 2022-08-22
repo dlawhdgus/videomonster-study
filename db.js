@@ -147,8 +147,8 @@ app.get('/mypage',(req,res) =>{
     con.query(sql, function(err, result,fields){
         if(err) {throw err}
         
-        var i = 1 //rowdatapacket num값
-        const num = result[1].num;
+        var i = 2 //rowdatapacket num값
+        const num = result[i].num;
         con.query(`SELECT * FROM login WHERE num = ${num}`,function(err2,result2){
             if(err2) throw err2;
             res.render('mypage',{login : result2})
